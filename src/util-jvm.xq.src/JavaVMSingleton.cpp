@@ -22,18 +22,18 @@
 #include <cstring>
 #include <sstream>
 
-#include "JavaVMSingelton.h"
+#include "JavaVMSingleton.h"
 #include <zorba/util/path.h>
 #include <zorba/util/file.h>
 #include <zorba/zorba.h>
 
 
 namespace zorba { namespace jvm {
-JavaVMSingelton* JavaVMSingelton::instance = NULL;
+JavaVMSingleton* JavaVMSingleton::instance = NULL;
 
-JavaVMSingelton::JavaVMSingelton(const char* classPath)
+JavaVMSingleton::JavaVMSingleton(const char* classPath)
 {
-  //std::cout << "JavaVMSingelton::JavaVMSingelton classPath: " << classPath << "\n"; std::cout.flush();
+  //std::cout << "JavaVMSingleton::JavaVMSingleton classPath: " << classPath << "\n"; std::cout.flush();
 
   memset(&args, 0, sizeof(args));
   jint r;
@@ -67,7 +67,7 @@ JavaVMSingelton::JavaVMSingelton(const char* classPath)
   }
 }
 
-JavaVMSingelton::~JavaVMSingelton()
+JavaVMSingleton::~JavaVMSingleton()
 {
   if (instance) {
     delete instance;
@@ -80,21 +80,21 @@ JavaVMSingelton::~JavaVMSingelton()
     delete[] classPathOption;
 }
 
-JavaVMSingelton* JavaVMSingelton::getInstance(const char* classPath)
+JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath)
 {
 //#ifdef WIN32
-//  // If pointer to instance of JavaVMSingelton exists (true) then return instance pointer else look for
+//  // If pointer to instance of JavaVMSingleton exists (true) then return instance pointer else look for
 //  // instance pointer in memory mapped pointer. If the instance pointer does not exist in
 //  // memory mapped pointer, return a newly created pointer to an instance of Abc.
 
 //  return instance ?
-//     instance : (instance = (JavaVMSingelton*) MemoryMappedPointers::getPointer("JavaVMSingelton")) ?
-//     instance : (instance = (JavaVMSingelton*) MemoryMappedPointers::createEntry("JavaVMSingelton",(void*)new JavaVMSingelton(classPath)));
+//     instance : (instance = (JavaVMSingleton*) MemoryMappedPointers::getPointer("JavaVMSingleton")) ?
+//     instance : (instance = (JavaVMSingleton*) MemoryMappedPointers::createEntry("JavaVMSingleton",(void*)new JavaVMSingleton(classPath)));
 //#else
 
 
-  // If pointer to instance of JavaVMSingelton exists (true) then return instance pointer
-  // else return a newly created pointer to an instance of JavaVMSingelton.
+  // If pointer to instance of JavaVMSingleton exists (true) then return instance pointer
+  // else return a newly created pointer to an instance of JavaVMSingleton.
   if (instance == NULL)
   {
     JavaVM *jvms;
@@ -110,21 +110,21 @@ JavaVMSingelton* JavaVMSingelton::getInstance(const char* classPath)
         {
           // if there is a jvm opened already by a diffrent dynamic lib
           // make a singleton for this lib with that jvm
-          instance = new JavaVMSingelton(jvm, env);
+          instance = new JavaVMSingleton(jvm, env);
         }
       }
     }
 
     if (instance == NULL)
     {
-      instance = new JavaVMSingelton(classPath);
+      instance = new JavaVMSingleton(classPath);
     }
   }
 
   return instance;
 }
 
-JavaVMSingelton* JavaVMSingelton::getInstance(const zorba::StaticContext* aStaticContext)
+JavaVMSingleton* JavaVMSingleton::getInstance(const zorba::StaticContext* aStaticContext)
 {
   if (instance == NULL)
   {
@@ -135,18 +135,18 @@ JavaVMSingelton* JavaVMSingelton::getInstance(const zorba::StaticContext* aStati
   return instance;
 }
 
-JavaVM* JavaVMSingelton::getVM()
+JavaVM* JavaVMSingleton::getVM()
 {
   return m_vm;
 }
 
-JNIEnv* JavaVMSingelton::getEnv()
+JNIEnv* JavaVMSingleton::getEnv()
 {
   return m_env;
 }
 
 
-String JavaVMSingelton::computeClassPath(const zorba::StaticContext* aStaticContext)
+String JavaVMSingleton::computeClassPath(const zorba::StaticContext* aStaticContext)
 {
   String cp;
 
@@ -225,7 +225,7 @@ String JavaVMSingelton::computeClassPath(const zorba::StaticContext* aStaticCont
 
   properties->setJVMClassPath(cp.str());
 
-  //std::cout << "JavaVMSingelton::computeClassPath: '" << cp << "'" << std::endl; std::cout.flush();
+  //std::cout << "JavaVMSingleton::computeClassPath: '" << cp << "'" << std::endl; std::cout.flush();
   return cp;
 }
 

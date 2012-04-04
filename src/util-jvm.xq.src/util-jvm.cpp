@@ -31,7 +31,7 @@
 #include <zorba/vector_item_sequence.h>
 #include <zorba/zorba.h>
 
-#include "JavaVMSingelton.h"
+#include "JavaVMSingleton.h"
 
 #define UTILJVM_MODULE_NAMESPACE "http://www.zorba-xquery.com/modules/util-jvm"
 #define UTILJVM_OPTIONS_NAMESPACE "http://www.zorba-xquery.com/modules/util-jvm/util-jvm-options"
@@ -43,99 +43,42 @@ class JavaException {
 
 namespace zorba
 {
-namespace utiljvm
-{
-
-class UtilJvmModule;
-
-class UtilJvmModule : public ExternalModule {
-  private:
-
-  public:
-    UtilJvmModule() {}
-
-	virtual ~UtilJvmModule()
-	{}
-
-	virtual String getURI() const
-	{ return UTILJVM_MODULE_NAMESPACE; }
-
-    virtual ExternalFunction* getExternalFunction(const String& localName);
-
-	virtual void destroy()
-	{
-      delete this;
-    }
-};
-
-
-ExternalFunction* UtilJvmModule::getExternalFunction(const String& localName)
-{
-	return 0;
-}
-
-/*
-bool compareItemQName(Item item, const char *localname, const char *ns)
-{
-  int node_kind = item.getNodeKind();
-  if(node_kind != store::StoreConsts::elementNode)
-    return false;
-  Item node_name;
-  item.getNodeName(node_name);
-  String  item_namespace = node_name.getNamespace();
-  if(ns && ns[0] && item_namespace != ns )
+  namespace utiljvm
   {
-    return false;
-  }
-  String  item_name = node_name.getLocalName();
-  if(item_name != localname)
-  {
-    return false;
-  }
-  return true;
-}
+
+    class UtilJvmModule;
+
+    class UtilJvmModule : public ExternalModule {
+    private:
+
+    public:
+      UtilJvmModule() {}
+
+      virtual ~UtilJvmModule()
+      {}
+
+      virtual String getURI() const
+      {
+	return UTILJVM_MODULE_NAMESPACE;
+      }
+
+      virtual ExternalFunction*
+      getExternalFunction(const String& localName);
+
+      virtual void destroy()
+      {
+	delete this;
+      }
+    };
 
 
-bool getChild(zorba::Iterator_t children, const char *localname, const char *ns,
-                           zorba::Item &child_item);
-bool getChild(zorba::Item &lItem, const char *localname, const char *ns,
-                           zorba::Item &child_item)
-{
-  Iterator_t    children;
-  children = lItem.getChildren();
-  children->open();
-  bool retval = getChild(children, localname, ns, child_item);
-  children->close();
-  return retval;
-}
-
-
-bool getChild(zorba::Iterator_t children, const char *localname, const char *ns,
-              zorba::Item &child_item)
-{
-  while(children->next(child_item))
-  {
-    if(child_item.getNodeKind() != store::StoreConsts::elementNode)
-      continue;
-    Item    child_name;
-    child_item.getNodeName(child_name);
-    String  item_namespace = child_name.getNamespace();
-    if(item_namespace != ns)
+    ExternalFunction*
+    UtilJvmModule::getExternalFunction(const String& localName)
     {
-      continue;//next child
+      return 0;
     }
-    String  item_name = child_name.getLocalName();
-    if(item_name != localname)
-    {
-      continue;//next child
-    }
-    return true;
-  }
-  return false;
-}
-*/
 
-}}; // namespace zorba, utiljvm
+  }}; // namespace zorba, utiljvm
 
 #ifdef WIN32
 #  define DLL_EXPORT __declspec(dllexport)

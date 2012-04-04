@@ -26,7 +26,7 @@ xquery version "1.0";
  : <br />
  : <b>Note:</b> Since this module has a Java library dependency a JVM is required
  : to be installed on the system. For Windows: jvm.dll is required on the system
- : path ( usually located in "C:\Program Files\Java\jre\bin\client".
+ : path (usually located in "C:\Program Files\Java\jre\bin\client").
  :
  : @author Cezar Andrei
  : @library <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK - Java Development Kit</a>

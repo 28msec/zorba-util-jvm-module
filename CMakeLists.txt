@@ -17,7 +17,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT (zorba_util-jvm_module)
 
 IF (ZORBA_SUPPRESS_JAVA)
-  MESSAGE (STATUS "ZORBA_SUPPRESS_JNI is true - not searching for Java")
+  MESSAGE (STATUS "ZORBA_SUPPRESS_JAVA is true - not searching for Java")
 ELSE (ZORBA_SUPPRESS_JAVA)
 
   MESSAGE(STATUS "")

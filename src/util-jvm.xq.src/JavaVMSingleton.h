@@ -25,22 +25,22 @@ namespace zorba { namespace jvm {
 
 class VMOpenException {};
 
-class JavaVMSingelton
+class JavaVMSingleton
 {
 public:
-  static JavaVMSingelton* getInstance(const char* classPath);
-  static JavaVMSingelton* getInstance(const zorba::StaticContext* aStaticContext);
+  static JavaVMSingleton* getInstance(const char* classPath);
+  static JavaVMSingleton* getInstance(const zorba::StaticContext* aStaticContext);
 
-  virtual ~JavaVMSingelton();
+  virtual ~JavaVMSingleton();
   JavaVM* getVM();
   JNIEnv* getEnv();
 
 protected:
-  JavaVMSingelton(const char* classPath);
-  JavaVMSingelton(JavaVM *jvm, JNIEnv *env) : m_vm(jvm), m_env(env) {}
+  JavaVMSingleton(const char* classPath);
+  JavaVMSingleton(JavaVM *jvm, JNIEnv *env) : m_vm(jvm), m_env(env) {}
   static String computeClassPath(const zorba::StaticContext* aStaticContext);
 
-  static JavaVMSingelton* instance;
+  static JavaVMSingleton* instance;
   JavaVM* m_vm;
   JNIEnv* m_env;
   JavaVMInitArgs args;
