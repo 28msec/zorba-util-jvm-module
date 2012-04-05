@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef JAVA_VM_SINGELTON
-#define JAVA_VM_SINGELTON
+#ifndef JAVA_VM_SINGLETON
+#define JAVA_VM_SINGLETON
 
 #include <jni.h>
 #include <zorba/static_context.h>
@@ -25,7 +25,7 @@ namespace zorba { namespace jvm {
 
 class VMOpenException {};
 
-class JavaVMSingleton
+class ZORBA_DLL_PUBLIC JavaVMSingleton
 {
 public:
   static JavaVMSingleton* getInstance(const char* classPath);
@@ -51,4 +51,4 @@ protected:
 
 }} //namespace zorba, jvm
 
-#endif // JAVA_VM_SINGELTON
+#endif // JAVA_VM_SINGLETON
