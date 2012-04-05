@@ -55,3 +55,7 @@ ELSE (ZORBA_SUPPRESS_JAVA)
   MESSAGE(STATUS "")
 ENDIF(ZORBA_SUPPRESS_JAVA)
 
+# Cache these variables for ease of packages depending on us
+SET (JAVA_FOUND "${JAVA_FOUND}" CACHE BOOL "Whether Java was found" FORCE)
+SET (JNI_FOUND "${JNI_FOUND}" CACHE BOOL "Whether JNI was found" FORCE)
+
