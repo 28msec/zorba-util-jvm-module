@@ -15,8 +15,6 @@ xquery version "1.0";
  : See the License for the specific language governing permissions and
  : limitations under the License.
  :)
-declare namespace ver = "http://www.zorba-xquery.com/options/versioning";
-declare option ver:module-version "1.0";
 
 (:~
  : This module provides common functionality for modules that use java
@@ -36,4 +34,7 @@ declare option ver:module-version "1.0";
  : @project utils/util jvm
  :)
 module namespace util-jvm = "http://www.zorba-xquery.com/modules/util-jvm";
+
+declare namespace ver = "http://www.zorba-xquery.com/options/versioning";
+declare option ver:module-version "1.0";
 
