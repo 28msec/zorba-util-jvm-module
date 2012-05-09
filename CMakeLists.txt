@@ -44,6 +44,10 @@ ELSE (ZORBA_SUPPRESS_JAVA)
       SET (ZORBA_PROJECT_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
       INCLUDE_DIRECTORIES ("${ZORBA_PROJECT_INCLUDE_DIRS}")
 
+      # Set up a "use file" for other modules to import
+      SET (ZORBA_PROJECT_USE_FILE
+	"${CMAKE_CURRENT_SOURCE_DIR}/config/UtilJavaUse.cmake")
+
       ADD_SUBDIRECTORY ("src")
       #ADD_TEST_DIRECTORY("${PROJECT_SOURCE_DIR}/test")
       DONE_DECLARING_ZORBA_URIS ()
