@@ -32,9 +32,6 @@ ELSE (ZORBA_SUPPRESS_JAVA)
   IF (JNI_FOUND)
       SET (UTIL_JVM_VERSION 1.0)
 
-      #ENABLE_TESTING ()
-      #INCLUDE (CTest)
-
       SET_CMAKE_MODULE_PATH ()
 
       FIND_PACKAGE (Zorba REQUIRED HINTS "${ZORBA_BUILD_DIR}")
@@ -47,9 +44,7 @@ ELSE (ZORBA_SUPPRESS_JAVA)
       # Set up a "use file" for other modules to import
       SET (ZORBA_PROJECT_USE_FILE
 	"${CMAKE_CURRENT_SOURCE_DIR}/config/UtilJavaUse.cmake")
-
       ADD_SUBDIRECTORY ("src")
-      #ADD_TEST_DIRECTORY("${PROJECT_SOURCE_DIR}/test")
       DONE_DECLARING_ZORBA_URIS ()
 
   ELSE (JNI_FOUND)
