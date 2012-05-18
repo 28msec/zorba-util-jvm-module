@@ -26,6 +26,17 @@ MESSAGE (STATUS "Java Library at :${JAVA_JVM_LIBRARY}")
 INCLUDE_DIRECTORIES (${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
 INCLUDE_DIRECTORIES (${JAVA_INCLUDE_PATH})
 
+# For now, we still have a module, but it actually does nothing at all.
 DECLARE_ZORBA_MODULE (URI "http://www.zorba-xquery.com/modules/util-jvm"
-    VERSION 1.0 FILE "util-jvm.xq" LINK_LIBRARIES "${JAVA_JVM_LIBRARY}")
+    VERSION 1.0 FILE "util-jvm.xq")
 
+# The important stuff is the library, which we install in Zorba's
+# default lib directory.
+ADD_LIBRARY(util-jvm SHARED util-jvm.cpp JavaVMSingleton.cpp)
+TARGET_LINK_LIBRARIES(util-jvm "${JAVA_JVM_LIBRARY}")
+INSTALL(TARGETS util-jvm DESTINATION lib)
+
+# Set this in the parent scope so it will be put into our Config.cmake file.
+# As with many other things, this doesn't work when the module is installed.
+GET_TARGET_PROPERTY(_lib_loc util-jvm LOCATION)
+SET(ZORBA_PROJECT_LIBRARIES "${_lib_loc}" PARENT_SCOPE)
