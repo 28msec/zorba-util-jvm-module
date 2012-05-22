@@ -33,10 +33,14 @@ DECLARE_ZORBA_MODULE (URI "http://www.zorba-xquery.com/modules/util-jvm"
 # The important stuff is the library, which we install in Zorba's
 # default lib directory.
 ADD_LIBRARY(util-jvm SHARED util-jvm.cpp JavaVMSingleton.cpp)
-TARGET_LINK_LIBRARIES(util-jvm "${JAVA_JVM_LIBRARY}")
+TARGET_LINK_LIBRARIES(util-jvm "${JAVA_JVM_LIBRARY}" zorba_${ZORBA_STORE_NAME})
 INSTALL(TARGETS util-jvm DESTINATION lib)
+
+# MAC OS X only property
+# this is required to make sure that the library has the correct install name after
+# installation such that dependent modules always find it
+SET_TARGET_PROPERTIES(util-jvm PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Set this in the parent scope so it will be put into our Config.cmake file.
 # As with many other things, this doesn't work when the module is installed.
-GET_TARGET_PROPERTY(_lib_loc util-jvm LOCATION)
-SET(ZORBA_PROJECT_LIBRARIES "${_lib_loc}" PARENT_SCOPE)
+SET(ZORBA_PROJECT_LIBRARIES util-jvm PARENT_SCOPE)
