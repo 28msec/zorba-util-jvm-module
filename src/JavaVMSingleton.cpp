@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include "JavaVMSingleton.h"
+
 #include <fstream>
 #include <iostream>
 #include <istream>
@@ -22,7 +24,6 @@
 #include <cstring>
 #include <sstream>
 
-#include "JavaVMSingleton.h"
 #include <zorba/util/path.h>
 #include <zorba/util/file.h>
 #include <zorba/zorba.h>

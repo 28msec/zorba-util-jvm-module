@@ -20,12 +20,33 @@
 #include <jni.h>
 #include <zorba/static_context.h>
 
+# if defined WIN32 || defined CYGWIN
+#   ifdef util_jvm_EXPORTS
+#     ifdef __GNUC__
+#       define UTIL_JVM_DLL_PUBLIC __attribute__((dllexport))
+#     else
+#       define UTIL_JVM_DLL_PUBLIC __declspec(dllexport)
+#     endif /* __GNUC__ */
+#   else /* util_jvm_EXPORTS */
+#     ifdef __GNUC__
+#       define UTIL_JVM_DLL_PUBLIC __attribute__((dllimport))
+#     else
+#       define UTIL_JVM_DLL_PUBLIC __declspec(dllimport)
+#     endif /* __GNUC__ */
+#   endif /* util_jvm_EXPORTS */
+# else
+#   if __GNUC__ >= 4
+#     define UTIL_JVM_DLL_PUBLIC __attribute__ ((visibility("default")))
+#   else
+#     define UTIL_JVM_DLL_PUBLIC
+#   endif
+# endif
 
 namespace zorba { namespace jvm {
 
 class VMOpenException {};
 
-class ZORBA_DLL_PUBLIC JavaVMSingleton
+class UTIL_JVM_DLL_PUBLIC JavaVMSingleton
 {
 public:
   static JavaVMSingleton* getInstance(const char* classPath);
