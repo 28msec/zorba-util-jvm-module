@@ -31,7 +31,6 @@
 #include <zorba/vector_item_sequence.h>
 #include <zorba/zorba.h>
 
-#define util_jvm_EXPORTS
 #include "JavaVMSingleton.h"
 
 #define UTILJVM_MODULE_NAMESPACE "http://www.zorba-xquery.com/modules/util-jvm"

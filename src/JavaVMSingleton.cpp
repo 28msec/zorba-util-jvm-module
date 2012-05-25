@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#define util_jvm_EXPORTS
 #include "JavaVMSingleton.h"
 
 #include <fstream>
