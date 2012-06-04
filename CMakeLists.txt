@@ -40,11 +40,16 @@ ELSE (ZORBA_SUPPRESS_JAVA)
       # Export this include directory by setting ZORBA_PROJECT_INCLUDE_DIRS
       SET (ZORBA_PROJECT_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
       INCLUDE_DIRECTORIES ("${ZORBA_PROJECT_INCLUDE_DIRS}")
+      INSTALL (FILES include/JavaVMSingleton.h DESTINATION include)
 
       # Set up a "use file" for other modules to import
       SET (ZORBA_PROJECT_USE_FILE
 	"${CMAKE_CURRENT_SOURCE_DIR}/config/UtilJavaUse.cmake")
       ADD_SUBDIRECTORY ("src")
+
+      # Set up configuration for install
+      ADD_SUBDIRECTORY ("config")
+
       DONE_DECLARING_ZORBA_URIS ()
 
   ELSE (JNI_FOUND)
