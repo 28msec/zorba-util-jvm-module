@@ -34,7 +34,10 @@ DECLARE_ZORBA_MODULE (URI "http://www.zorba-xquery.com/modules/util-jvm"
 # default lib directory.
 ADD_LIBRARY(util-jvm SHARED util-jvm.cpp JavaVMSingleton.cpp)
 TARGET_LINK_LIBRARIES(util-jvm "${JAVA_JVM_LIBRARY}" zorba_${ZORBA_STORE_NAME})
-INSTALL(TARGETS util-jvm DESTINATION lib)
+INSTALL(TARGETS util-jvm 
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib${LIB_SUFFIX}
+  ARCHIVE DESTINATION lib)
 
 # MAC OS X only property
 # this is required to make sure that the library has the correct install name after
