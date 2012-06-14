@@ -27,9 +27,6 @@ ELSE (ZORBA_SUPPRESS_JAVA)
   MESSAGE (STATUS "Looking for JNI")
   ZORBA_FIND_JNI()
 
-  MESSAGE (STATUS "Looking for JNI")
-  FIND_PACKAGE(JNI)
-
   MESSAGE (STATUS "Looking for Java")
   FIND_PACKAGE(Java)
 
