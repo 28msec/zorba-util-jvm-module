@@ -19,23 +19,13 @@ PROJECT (zorba_util-jvm_module)
 IF (ZORBA_SUPPRESS_JAVA)
   MESSAGE (STATUS "ZORBA_SUPPRESS_JAVA is true - not searching for Java")
 ELSE (ZORBA_SUPPRESS_JAVA)
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/config/UtilJavaUse.cmake)
 
   MESSAGE(STATUS "")
   MESSAGE(STATUS "--- Module:   util-jvm    ---")
 
-  IF (UNIX AND NOT APPLE)
-    # setting JAVA_HOME to bypass issues in FindJNI.cmake  
-    FIND_FILE(_JAVA_BIN_LOC NAMES java PATHS ENV PATH)
-    IF (_JAVA_BIN_LOC)
-      GET_FILENAME_COMPONENT(_JAVA_BIN_LOC "${_JAVA_BIN_LOC}" REALPATH) 
-      GET_FILENAME_COMPONENT(_JAVA_BIN_DIR ${_JAVA_BIN_LOC} PATH)
-      GET_FILENAME_COMPONENT(_JAVA_HOME "${_JAVA_BIN_DIR}/../.." ABSOLUTE)
-      MESSAGE(
-        STATUS "Generated JAVA_HOME to support FindJNI.cmake: " 
-        ${_JAVA_HOME})
-      SET(ENV{JAVA_HOME} ${_JAVA_HOME})
-    ENDIF()
-  ENDIF()
+  MESSAGE (STATUS "Looking for JNI")
+  ZORBA_FIND_JNI()
 
   MESSAGE (STATUS "Looking for JNI")
   FIND_PACKAGE(JNI)
