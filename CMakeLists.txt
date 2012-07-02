@@ -19,12 +19,13 @@ PROJECT (zorba_util-jvm_module)
 IF (ZORBA_SUPPRESS_JAVA)
   MESSAGE (STATUS "ZORBA_SUPPRESS_JAVA is true - not searching for Java")
 ELSE (ZORBA_SUPPRESS_JAVA)
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/config/UtilJavaUse.cmake)
 
   MESSAGE(STATUS "")
   MESSAGE(STATUS "--- Module:   util-jvm    ---")
 
   MESSAGE (STATUS "Looking for JNI")
-  FIND_PACKAGE(JNI)
+  ZORBA_FIND_JNI()
 
   MESSAGE (STATUS "Looking for Java")
   FIND_PACKAGE(Java)
