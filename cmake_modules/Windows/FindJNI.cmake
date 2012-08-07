@@ -25,11 +25,11 @@ IF (JNI_FOUND)
   IF (EXISTS "${JAVA_JVM_LIBRARY_PATH}/../jre/bin/client")
     SET (FOUND_LOCATION "${JAVA_JVM_LIBRARY_PATH}/../jre/bin/client")
     # find the needed DLL's
-    FIND_PACKAGE_DLL_WIN32 (${FOUND_LOCATION} "jvm")
+    FIND_PACKAGE_DLL_WIN32 (${FOUND_LOCATION} "jvm" SKIP_INSTALL)
   ELSEIF (EXISTS "${JAVA_JVM_LIBRARY_PATH}/../jre/bin/server")
     SET (FOUND_LOCATION "${JAVA_JVM_LIBRARY_PATH}/../jre/bin/server")
     # find the needed DLL's
-    FIND_PACKAGE_DLL_WIN32 (${FOUND_LOCATION} "jvm")
+    FIND_PACKAGE_DLL_WIN32 (${FOUND_LOCATION} "jvm" SKIP_INSTALL)
   ELSE (EXISTS "${JAVA_JVM_LIBRARY_PATH}/../jre/bin/client")
     MESSAGE (WARNING "Could not find the jvm.dll for the JVM library: ${JAVA_JVM_LIBRARY}. Please extend this module to find the jvm.dll somewhere in your JVM directory or make sure that jvm.dll is in the PATH.")
   ENDIF (EXISTS "${JAVA_JVM_LIBRARY_PATH}/../jre/bin/client")
