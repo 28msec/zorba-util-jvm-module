@@ -1,12 +1,12 @@
 /*
  * Copyright 2006-2008 The FLWOR Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,13 +32,13 @@
 namespace zorba { namespace jvm {
 JavaVMSingleton* JavaVMSingleton::instance = NULL;
 
-JavaVMSingleton::JavaVMSingleton(const char* classPath)
+JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
 {
   //std::cout << "JavaVMSingleton::JavaVMSingleton classPath: " << classPath << "\n"; std::cout.flush();
 
   memset(&args, 0, sizeof(args));
   jint r;
-  jint nOptions = 2;
+  jint nOptions = NO_OF_JVM_OPTIONS;
 
   std::string classpathOption;
   std::ostringstream os;
@@ -47,15 +47,26 @@ JavaVMSingleton::JavaVMSingleton(const char* classPath)
   classPathOption = new char[classpathOption.size() + 1];
   memset(classPathOption, 0, sizeof(char) * (classpathOption.size() + 1));
   memcpy(classPathOption, classpathOption.c_str(), classpathOption.size() * sizeof(char));
+
   std::string lAwtArgStr = "-Djava.awt.headless=true";
   awtOption = new char[lAwtArgStr.size() + 1];
   memset(awtOption, 0, sizeof(char) * (lAwtArgStr.size() + 1));
   memcpy(awtOption, lAwtArgStr.c_str(), sizeof(char) * lAwtArgStr.size());
   awtOption[lAwtArgStr.size()] = 0;
+
+  std::string jlpStr = "-Djava.library.path=/home/cezar/dev/repo/fpdf/fpdf/build/zorba_modules/zorba_util-jvm_module/src/:/home/cezar/dev/repo/fpdf/fpdf/build/LIB_PATH/com/zorba-xquery/www/modules/";
+  jlpOption = new char[jlpStr.size() + 1];
+  memset(jlpOption, 0, sizeof(char) * (jlpStr.size() + 1));
+  memcpy(jlpOption, jlpStr.c_str(), sizeof(char) * jlpStr.size());
+  jlpOption[jlpStr.size()] = 0;
+
   options[0].optionString = classPathOption;
   options[0].extraInfo = NULL;
   options[1].optionString = awtOption;
   options[1].extraInfo = NULL;
+  options[2].optionString = jlpOption;
+  options[2].extraInfo = NULL;
+
   memset(&args, 0, sizeof(args));
   args.version  = JNI_VERSION_1_2;
   args.nOptions = nOptions;
@@ -81,7 +92,12 @@ JavaVMSingleton::~JavaVMSingleton()
     delete[] classPathOption;
 }
 
-JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath)
+/*JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath)
+{
+  return getInstance(classPath, "");
+}*/
+
+JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath, const char* javaLibPath)
 {
 //#ifdef WIN32
 //  // If pointer to instance of JavaVMSingleton exists (true) then return instance pointer else look for
@@ -118,19 +134,22 @@ JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath)
 
     if (instance == NULL)
     {
-      instance = new JavaVMSingleton(classPath);
+      instance = new JavaVMSingleton(classPath, javaLibPath);
     }
   }
 
   return instance;
 }
 
+
+
 JavaVMSingleton* JavaVMSingleton::getInstance(const zorba::StaticContext* aStaticContext)
 {
   if (instance == NULL)
   {
     String cp = computeClassPath(aStaticContext);
-    return getInstance(cp.c_str());
+    String lp = computeLibPath(aStaticContext);
+    return getInstance(cp.c_str(), lp.c_str());
   }
 
   return instance;
@@ -230,4 +249,73 @@ String JavaVMSingleton::computeClassPath(const zorba::StaticContext* aStaticCont
   return cp;
 }
 
+
+String JavaVMSingleton::computeLibPath(const zorba::StaticContext* aStaticContext)
+{
+  String lp;
+  std::vector<String> lCPV;
+  String pathSeparator(filesystem_path::get_path_separator());
+
+  aStaticContext->getFullLibPath(lCPV);
+  for (std::vector<String>::iterator lIter = lCPV.begin();
+       lIter != lCPV.end(); ++lIter)
+  {
+    String p = *lIter;
+    std::cout << "FullLibPath: '" << p << "'" << std::endl; std::cout.flush();
+    lp += pathSeparator + p;
+  }
+
+  aStaticContext->getLibPath(lCPV);
+  for (std::vector<String>::iterator lIter = lCPV.begin();
+       lIter != lCPV.end(); ++lIter)
+  {
+    String p = *lIter;
+    std::cout << "LibPath: '" << p << "'" << std::endl; std::cout.flush();
+    lp += pathSeparator + p;
+  }
+
+  aStaticContext->getFullURIPath(lCPV);
+  for (std::vector<String>::iterator lIter = lCPV.begin();
+       lIter != lCPV.end(); ++lIter)
+  {
+    String p = *lIter;
+    std::cout << "FullURIPath: '" << p << "'" << std::endl; std::cout.flush();
+    lp += pathSeparator + p;
+  }
+
+  aStaticContext->getURIPath(lCPV);
+  for (std::vector<String>::iterator lIter = lCPV.begin();
+       lIter != lCPV.end(); ++lIter)
+  {
+    String p = *lIter;
+    std::cout << "URIPath: '" << p << "'" << std::endl; std::cout.flush();
+    lp += pathSeparator + p;
+  }
+
+  aStaticContext->getFullModulePaths(lCPV);
+  for (std::vector<String>::iterator lIter = lCPV.begin();
+       lIter != lCPV.end(); ++lIter)
+  {
+    String p = *lIter;
+    std::cout << "FullModulePath: '" << p << "'" << std::endl; std::cout.flush();
+    lp += pathSeparator + p;
+  }
+
+  aStaticContext->getModulePaths(lCPV);
+  for (std::vector<String>::iterator lIter = lCPV.begin();
+       lIter != lCPV.end(); ++lIter)
+  {
+    String p = *lIter;
+    std::cout << "ModulePath: '" << p << "'" << std::endl; std::cout.flush();
+    lp += pathSeparator + p;
+  }
+
+
+  std::cout << "JavaVMSingleton::computeLibPath: '" << lp << "'" << std::endl; std::cout.flush();
+  return lp;
+}
+
+
 }} // namespace zorba, jvm
+
+
