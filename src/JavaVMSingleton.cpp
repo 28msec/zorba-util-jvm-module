@@ -34,8 +34,6 @@ JavaVMSingleton* JavaVMSingleton::instance = NULL;
 
 JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
 {
-  //std::cout << "JavaVMSingleton::JavaVMSingleton classPath: " << classPath << "\n"; std::cout.flush();
-
   memset(&args, 0, sizeof(args));
   jint r;
   jint nOptions = NO_OF_JVM_OPTIONS;
@@ -54,7 +52,6 @@ JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
   memcpy(awtOption, lAwtArgStr.c_str(), sizeof(char) * lAwtArgStr.size());
   awtOption[lAwtArgStr.size()] = 0;
 
-  //// std::string jlpStr = "-Djava.library.path=/home/cezar/dev/repo/fpdf/fpdf/build/zorba_modules/zorba_util-jvm_module/src/:/home/cezar/dev/repo/fpdf/fpdf/build/LIB_PATH/com/zorba-xquery/www/modules/";
   // javaLibPath are only base pathes, the full path will be computed at runtime in the Java class
   std::string jlpStr = "-Djava.library.path=" + std::string(javaLibPath);
   jlpOption = new char[jlpStr.size() + 1];
