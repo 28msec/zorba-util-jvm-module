@@ -54,7 +54,9 @@ JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
   memcpy(awtOption, lAwtArgStr.c_str(), sizeof(char) * lAwtArgStr.size());
   awtOption[lAwtArgStr.size()] = 0;
 
-  std::string jlpStr = "-Djava.library.path=/home/cezar/dev/repo/fpdf/fpdf/build/zorba_modules/zorba_util-jvm_module/src/:/home/cezar/dev/repo/fpdf/fpdf/build/LIB_PATH/com/zorba-xquery/www/modules/";
+  //// std::string jlpStr = "-Djava.library.path=/home/cezar/dev/repo/fpdf/fpdf/build/zorba_modules/zorba_util-jvm_module/src/:/home/cezar/dev/repo/fpdf/fpdf/build/LIB_PATH/com/zorba-xquery/www/modules/";
+  // javaLibPath are only base pathes, the full path will be computed at runtime in the Java class
+  std::string jlpStr = "-Djava.library.path=" + std::string(javaLibPath);
   jlpOption = new char[jlpStr.size() + 1];
   memset(jlpOption, 0, sizeof(char) * (jlpStr.size() + 1));
   memcpy(jlpOption, jlpStr.c_str(), sizeof(char) * jlpStr.size());
@@ -261,57 +263,11 @@ String JavaVMSingleton::computeLibPath(const zorba::StaticContext* aStaticContex
        lIter != lCPV.end(); ++lIter)
   {
     String p = *lIter;
-    std::cout << "FullLibPath: '" << p << "'" << std::endl; std::cout.flush();
+    //std::cout << "FullLibPath: '" << p << "'" << std::endl; std::cout.flush();
     lp += pathSeparator + p;
   }
 
-  aStaticContext->getLibPath(lCPV);
-  for (std::vector<String>::iterator lIter = lCPV.begin();
-       lIter != lCPV.end(); ++lIter)
-  {
-    String p = *lIter;
-    std::cout << "LibPath: '" << p << "'" << std::endl; std::cout.flush();
-    lp += pathSeparator + p;
-  }
-
-  aStaticContext->getFullURIPath(lCPV);
-  for (std::vector<String>::iterator lIter = lCPV.begin();
-       lIter != lCPV.end(); ++lIter)
-  {
-    String p = *lIter;
-    std::cout << "FullURIPath: '" << p << "'" << std::endl; std::cout.flush();
-    lp += pathSeparator + p;
-  }
-
-  aStaticContext->getURIPath(lCPV);
-  for (std::vector<String>::iterator lIter = lCPV.begin();
-       lIter != lCPV.end(); ++lIter)
-  {
-    String p = *lIter;
-    std::cout << "URIPath: '" << p << "'" << std::endl; std::cout.flush();
-    lp += pathSeparator + p;
-  }
-
-  aStaticContext->getFullModulePaths(lCPV);
-  for (std::vector<String>::iterator lIter = lCPV.begin();
-       lIter != lCPV.end(); ++lIter)
-  {
-    String p = *lIter;
-    std::cout << "FullModulePath: '" << p << "'" << std::endl; std::cout.flush();
-    lp += pathSeparator + p;
-  }
-
-  aStaticContext->getModulePaths(lCPV);
-  for (std::vector<String>::iterator lIter = lCPV.begin();
-       lIter != lCPV.end(); ++lIter)
-  {
-    String p = *lIter;
-    std::cout << "ModulePath: '" << p << "'" << std::endl; std::cout.flush();
-    lp += pathSeparator + p;
-  }
-
-
-  std::cout << "JavaVMSingleton::computeLibPath: '" << lp << "'" << std::endl; std::cout.flush();
+  //std::cout << "JavaVMSingleton::computeLibPath: '" << lp << "'" << std::endl; std::cout.flush();
   return lp;
 }
 

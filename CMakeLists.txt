@@ -19,12 +19,13 @@ PROJECT (zorba_util-jvm_module)
 IF (ZORBA_SUPPRESS_JAVA)
   MESSAGE (STATUS "ZORBA_SUPPRESS_JAVA is true - not searching for Java")
 ELSE (ZORBA_SUPPRESS_JAVA)
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/config/UtilJavaUse.cmake)
 
   MESSAGE(STATUS "")
   MESSAGE(STATUS "--- Module:   util-jvm    ---")
 
   MESSAGE (STATUS "Looking for JNI")
-  FIND_PACKAGE(JNI)
+  ZORBA_FIND_JNI()
 
   MESSAGE (STATUS "Looking for Java")
   FIND_PACKAGE(Java)
@@ -32,11 +33,11 @@ ELSE (ZORBA_SUPPRESS_JAVA)
   IF (JNI_FOUND)
       SET (UTIL_JVM_VERSION 1.0)
 
-      SET_CMAKE_MODULE_PATH ()
-
       FIND_PACKAGE (Zorba REQUIRED HINTS "${ZORBA_BUILD_DIR}")
       INCLUDE ("${Zorba_USE_FILE}")
-
+      
+      SET_CMAKE_MODULE_PATH()
+      
       # Export this include directory by setting ZORBA_PROJECT_INCLUDE_DIRS
       SET (ZORBA_PROJECT_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
       INCLUDE_DIRECTORIES ("${ZORBA_PROJECT_INCLUDE_DIRS}")
