@@ -232,8 +232,6 @@ String JavaVMSingleton::computeClassPath(const zorba::StaticContext* aStaticCont
               if ( lineStr.size() == 0 )
                 continue;
 
-              //std::cout << "line: '" << lineStr << "'" << std::endl; std::cout.flush();
-
               const std::string normalizedPath =
                   filesystem_path::normalize_path( lineStr, jarsDirPath.get_path());
 
@@ -247,7 +245,6 @@ String JavaVMSingleton::computeClassPath(const zorba::StaticContext* aStaticCont
 
   properties->setJVMClassPath(cp.str());
 
-  //std::cout << "JavaVMSingleton::computeClassPath: '" << cp << "'" << std::endl; std::cout.flush();
   return cp;
 }
 
@@ -263,15 +260,11 @@ String JavaVMSingleton::computeLibPath(const zorba::StaticContext* aStaticContex
        lIter != lCPV.end(); ++lIter)
   {
     String p = *lIter;
-    //std::cout << "FullLibPath: '" << p << "'" << std::endl; std::cout.flush();
     lp += pathSeparator + p;
   }
 
-  //std::cout << "JavaVMSingleton::computeLibPath: '" << lp << "'" << std::endl; std::cout.flush();
   return lp;
 }
 
 
 }} // namespace zorba, jvm
-
-
