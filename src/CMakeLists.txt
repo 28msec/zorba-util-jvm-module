@@ -39,10 +39,17 @@ INSTALL(TARGETS util-jvm
   LIBRARY DESTINATION lib${LIB_SUFFIX}
   ARCHIVE DESTINATION lib)
 
-# MAC OS X only property
-# this is required to make sure that the library has the correct install name after
-# installation such that dependent modules always find it
-SET_TARGET_PROPERTIES(util-jvm PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" INSTALL_RPATH_USE_LINK_PATH TRUE)
+#SET RPATH
+IF (ZORBA_ADD_DEBIAN_JRE_RPATHS)
+  SET (INSTALL_RPATH_PATHS "/usr/lib/jvm/default-java/jre/lib/amd64/server/libjvm.so;/usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server/libjvm.so;/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/server/libjvm.so;/usr/lib/jvm/java-7-openjdk/jre/lib/amd64/server/libjvm.so;/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so;/usr/lib/jvm/default-java/jre/lib/i386/server/libjvm.so;/usr/lib/jvm/java-6-openjdk/jre/lib/i386/server/libjvm.so;/usr/lib/jvm/java-6-openjdk-i386/jre/lib/i386/server/libjvm.so;/usr/lib/jvm/java-7-openjdk/jre/lib/i386/server/libjvm.so;/usr/lib/jvm/java-7-openjdk-i386/jre/lib/i386/server/libjvm.so")
+  SET_TARGET_PROPERTIES(util-jvm PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" INSTALL_RPATH_USE_LINK_PATH TRUE INSTALL_RPATH "${INSTALL_RPATH_PATHS}")
+ELSE (ZORBA_ADD_DEBIAN_JRE_RPATHS)
+  # MAC OS X only property
+  # this is required to make sure that the library has the correct install name after
+  # installation such that dependent modules always find it
+  SET_TARGET_PROPERTIES(util-jvm PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+ENDIF (ZORBA_ADD_DEBIAN_JRE_RPATHS)
+
 
 # Set this in the parent scope so it will be put into our Config.cmake file.
 # As with many other things, this doesn't work when the module is installed.
