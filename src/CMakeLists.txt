@@ -42,7 +42,7 @@ INSTALL(TARGETS util-jvm
 # MAC OS X only property
 # this is required to make sure that the library has the correct install name after
 # installation such that dependent modules always find it
-SET_TARGET_PROPERTIES(util-jvm PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+SET_TARGET_PROPERTIES(util-jvm PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Set this in the parent scope so it will be put into our Config.cmake file.
 # As with many other things, this doesn't work when the module is installed.
