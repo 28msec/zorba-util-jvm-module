@@ -24,12 +24,12 @@
 #include <cstring>
 #include <sstream>
 
-#include <zorba/util/path.h>
-#include <zorba/util/file.h>
 #include <zorba/zorba.h>
+#include <zorba/util/fs_util.h>
 
+namespace zorba {
+namespace jvm {
 
-namespace zorba { namespace jvm {
 JavaVMSingleton* JavaVMSingleton::instance = NULL;
 
 JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
@@ -178,45 +178,35 @@ String JavaVMSingleton::computeClassPath(const zorba::StaticContext* aStaticCont
   std::vector<String> lCPV;
   aStaticContext->getFullLibPath(lCPV);
 
-  String pathSeparator(filesystem_path::get_path_separator());
-  String dirSeparator(filesystem_path::get_directory_separator());
-
   for (std::vector<String>::iterator lIter = lCPV.begin();
        lIter != lCPV.end(); ++lIter)
   {
     // verify it contains a jars dir
-    const filesystem_path baseFsPath((*lIter).str());
-    const filesystem_path jarsFsPath(std::string("jars"));
-    filesystem_path jarsDirPath(baseFsPath, jarsFsPath);
+    String jarsDir( *lIter );
+    fs::append( jarsDir, "jars" );
 
-    file jarsDir(jarsDirPath);
-
-    if ( jarsDir.exists() && jarsDir.is_directory())
+    if ( fs::get_type( jarsDir ) == fs::directory )
     {
-      std::vector<std::string> list;
-      jarsDir.lsdir(list);
+      fs::iterator itemIter( jarsDir );
 
-      for (std::vector<std::string>::iterator itemIter = list.begin();
-           itemIter != list.end(); ++itemIter)
+      while ( itemIter.next() )
       {
-        filesystem_path itemLocalFS(*itemIter);
-        filesystem_path itemFS(jarsDirPath, itemLocalFS);
-        file itemFile(itemFS);
-        if ( itemFile.exists() && itemFile.is_file() )
+        String itemFile( jarsDir );
+        fs::append( itemFile, itemIter->name );
+        if ( fs::get_type( itemFile ) == fs::file )
         {
-          std::string itemName = itemFile.get_path();
           std::string suffix = "-classpath.txt";
           size_t found;
-          found = itemName.rfind(suffix);
+          found = itemFile.rfind(suffix);
           if (found!=std::string::npos &&
-              found + suffix.length() == itemName.length() )
+              found + suffix.length() == itemFile.length() )
           {
             std::auto_ptr<std::istream> pathFile;
-            pathFile.reset(new std::ifstream (itemName.c_str ()));
+            pathFile.reset(new std::ifstream (itemFile.c_str ()));
             if (!pathFile->good() || pathFile->eof() )
             {
-              std::cerr << "file {" << itemName << "} not found or not readable." << std::endl;
-              throw itemName;
+              std::cerr << "file {" << itemFile << "} not found or not readable." << std::endl;
+              throw itemFile;
             }
 
             // read file
@@ -226,13 +216,10 @@ String JavaVMSingleton::computeClassPath(const zorba::StaticContext* aStaticCont
               pathFile->getline(line, sizeof(line));
               std::string lineStr(line);
 
-              if ( lineStr.size() == 0 )
-                continue;
-
-              const std::string normalizedPath =
-                  filesystem_path::normalize_path( lineStr, jarsDirPath.get_path());
-
-              cp += pathSeparator + normalizedPath;
+              if ( lineStr.size() > 0 ) {
+                cp += fs::path_separator;
+                cp += fs::normalize_path( lineStr, jarsDir );
+              }
             }
           }
         }
@@ -250,18 +237,20 @@ String JavaVMSingleton::computeLibPath(const zorba::StaticContext* aStaticContex
 {
   String lp;
   std::vector<String> lCPV;
-  String pathSeparator(filesystem_path::get_path_separator());
 
   aStaticContext->getFullLibPath(lCPV);
   for (std::vector<String>::iterator lIter = lCPV.begin();
        lIter != lCPV.end(); ++lIter)
   {
-    String p = *lIter;
-    lp += pathSeparator + p;
+    String p( *lIter );
+    lp += fs::path_separator;
+    lp += p;
   }
 
   return lp;
 }
 
 
-}} // namespace zorba, jvm
+} // namespace jvm
+} // namespace zorba
+/* vim:set et sw=2 ts=2: */
