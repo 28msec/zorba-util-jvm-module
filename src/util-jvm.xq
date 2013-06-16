@@ -31,7 +31,7 @@ xquery version "1.0";
  :
  : @author Cezar Andrei
  : @library <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK - Java Development Kit</a>
- : @project utils/util jvm
+ : @project Zorba/JVM Utility
  :)
 module namespace util-jvm = "http://www.zorba-xquery.com/modules/util-jvm";
 
