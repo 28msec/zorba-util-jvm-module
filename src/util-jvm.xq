@@ -35,6 +35,6 @@ xquery version "1.0";
  :)
 module namespace util-jvm = "http://www.zorba-xquery.com/modules/util-jvm";
 
-declare namespace ver = "http://www.zorba-xquery.com/options/versioning";
+declare namespace ver = "http://zorba.io/options/versioning";
 declare option ver:module-version "1.0";
 
