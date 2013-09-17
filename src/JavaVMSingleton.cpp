@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
+#include <memory>
 
 #include <zorba/zorba.h>
 #include <zorba/util/fs_util.h>
