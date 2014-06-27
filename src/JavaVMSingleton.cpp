@@ -43,16 +43,14 @@ JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
       JavaVM *jvm = jvms;
       JNIEnv *env;
       if( jvm->AttachCurrentThread((void **)&env, NULL) == 0)
+      {
         init(jvm, env);
-      else
-        init(classPath, javaLibPath);
+        return;
+      }
     }
-    else
-      init(classPath, javaLibPath);
   }
-  else
-    init(classPath, javaLibPath);
 
+  init(classPath, javaLibPath);
 }
 
 void JavaVMSingleton::init(const char* classPath, const char* javaLibPath)
