@@ -32,12 +32,32 @@
 namespace zorba {
 namespace jvm {
 
-std::unique_ptr<JavaVMSingleton> JavaVMSingleton::s_instance;
-
 JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
 {
+  JavaVM *jvms;
+  jsize nVMs;
+  if ( JNI_GetCreatedJavaVMs(&jvms, 1, &nVMs)==0 )
+  {
+    if (nVMs == 1)
+    {
+      JavaVM *jvm = jvms;
+      JNIEnv *env;
+      if( jvm->AttachCurrentThread((void **)&env, NULL) == 0)
+        init(jvm, env);
+      else
+        init(classPath, javaLibPath);
+    }
+    else
+      init(classPath, javaLibPath);
+  }
+  else
+    init(classPath, javaLibPath);
+
+}
+
+void JavaVMSingleton::init(const char* classPath, const char* javaLibPath)
+{
   memset(&m_args, 0, sizeof(m_args));
-  jint r;
   jint nOptions = NO_OF_JVM_OPTIONS;
 
   std::string classpathOption;
@@ -74,20 +94,19 @@ JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
   m_args.options  = m_options;
   m_args.ignoreUnrecognized = JNI_FALSE;
 
-  r = JNI_CreateJavaVM(&m_vm, (void **)&m_env, &m_args);
-  if (r != JNI_OK) {
+  if (JNI_CreateJavaVM(&m_vm, (void **)&m_env, &m_args) != JNI_OK)
+  {
     throw VMOpenException();
   }
 }
 
-JavaVMSingleton::JavaVMSingleton(JavaVM *jvm, JNIEnv *env):
-    m_vm(jvm),
-    m_env(env),
-    m_classPathOption(NULL),
-    m_awtOption(NULL),
-    m_jlpOption(NULL)
+void JavaVMSingleton::init(JavaVM *jvm, JNIEnv *env)
 {
-
+  m_vm = jvm;
+  m_env = env;
+  m_classPathOption = NULL;
+  m_awtOption = NULL;
+  m_jlpOption = NULL;
 }
 
 JavaVMSingleton::~JavaVMSingleton()
@@ -99,65 +118,21 @@ JavaVMSingleton::~JavaVMSingleton()
     delete[] m_jlpOption;
   if (m_classPathOption)
     delete[] m_classPathOption;
-  s_instance = NULL;
 }
 
 JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath, const char* javaLibPath)
 {
-//#ifdef WIN32
-//  // If pointer to instance of JavaVMSingleton exists (true) then return instance pointer else look for
-//  // instance pointer in memory mapped pointer. If the instance pointer does not exist in
-//  // memory mapped pointer, return a newly created pointer to an instance of Abc.
-
-//  return instance ?
-//     instance : (instance = (JavaVMSingleton*) MemoryMappedPointers::getPointer("JavaVMSingleton")) ?
-//     instance : (instance = (JavaVMSingleton*) MemoryMappedPointers::createEntry("JavaVMSingleton",(void*)new JavaVMSingleton(classPath)));
-//#else
-
-
-  // If pointer to instance of JavaVMSingleton exists (true) then return instance pointer
-  // else return a newly created pointer to an instance of JavaVMSingleton.
-  if (s_instance == NULL)
-  {
-    JavaVM *jvms;
-    jsize nVMs;
-    if ( JNI_GetCreatedJavaVMs(&jvms, 1, &nVMs)==0 )
-    {
-      //std::cout << "Got JVMs " << nVMs << "\n"; std::cout.flush();
-      if (nVMs == 1)
-      {
-        JavaVM *jvm = jvms;
-        JNIEnv *env;
-        if( jvm->AttachCurrentThread((void **)&env, NULL) ==0 )
-        {
-          // if there is a jvm opened already by a diffrent dynamic lib
-          // make a singleton for this lib with that jvm
-          s_instance.reset(new JavaVMSingleton(jvm, env));
-        }
-      }
-    }
-
-    if (s_instance == NULL)
-    {
-      s_instance.reset(new JavaVMSingleton(classPath, javaLibPath));
-    }
-  }
-
-  return s_instance.get();
+  static JavaVMSingleton s_instance(classPath, javaLibPath);
+  return &s_instance;
 }
 
 
 
 JavaVMSingleton* JavaVMSingleton::getInstance(const zorba::StaticContext* aStaticContext)
 {
-  if (s_instance == NULL)
-  {
-    String cp = computeClassPath(aStaticContext);
-    String lp = computeLibPath(aStaticContext);
-    return getInstance(cp.c_str(), lp.c_str());
-  }
-
-  return s_instance.get();
+  String cp = computeClassPath(aStaticContext);
+  String lp = computeLibPath(aStaticContext);
+  return getInstance(cp.c_str(), lp.c_str());
 }
 
 JavaVM* JavaVMSingleton::getVM()
