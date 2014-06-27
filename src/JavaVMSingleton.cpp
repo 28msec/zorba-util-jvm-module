@@ -36,7 +36,7 @@ JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
 {
   JavaVM *jvms;
   jsize nVMs;
-  if ( JNI_GetCreatedJavaVMs(&jvms, 1, &nVMs)==0 )
+  if ( JNI_GetCreatedJavaVMs(&jvms, 1, &nVMs) == 0 )
   {
     if (nVMs == 1)
     {
@@ -110,12 +110,9 @@ void JavaVMSingleton::init(JavaVM *jvm, JNIEnv *env)
 JavaVMSingleton::~JavaVMSingleton()
 {
   m_vm->DestroyJavaVM();
-  if (m_awtOption)
-    delete[] m_awtOption;
-  if (m_jlpOption)
-    delete[] m_jlpOption;
-  if (m_classPathOption)
-    delete[] m_classPathOption;
+  delete[] m_awtOption;
+  delete[] m_jlpOption;
+  delete[] m_classPathOption;
 }
 
 JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath, const char* javaLibPath)
