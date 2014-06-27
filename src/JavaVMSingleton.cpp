@@ -27,132 +27,109 @@
 
 #include <zorba/zorba.h>
 #include <zorba/util/fs_util.h>
+#include <zorba/internal/unique_ptr.h>
 
 namespace zorba {
 namespace jvm {
 
-JavaVMSingleton* JavaVMSingleton::instance = NULL;
-
 JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
 {
-  memset(&args, 0, sizeof(args));
-  jint r;
+  JavaVM *jvms;
+  jsize nVMs;
+  if ( JNI_GetCreatedJavaVMs(&jvms, 1, &nVMs) == 0 )
+  {
+    if (nVMs == 1)
+    {
+      JavaVM *jvm = jvms;
+      JNIEnv *env;
+      if( jvm->AttachCurrentThread((void **)&env, NULL) == 0)
+      {
+        init(jvm, env);
+        return;
+      }
+      else
+        throw VMOpenException();
+    }
+  }
+
+  init(classPath, javaLibPath);
+}
+
+void JavaVMSingleton::init(const char* classPath, const char* javaLibPath)
+{
+  memset(&m_args, 0, sizeof(m_args));
   jint nOptions = NO_OF_JVM_OPTIONS;
 
   std::string classpathOption;
   std::ostringstream os;
   os << "-Djava.class.path=" << classPath;
   classpathOption = os.str();
-  classPathOption = new char[classpathOption.size() + 1];
-  memset(classPathOption, 0, sizeof(char) * (classpathOption.size() + 1));
-  memcpy(classPathOption, classpathOption.c_str(), classpathOption.size() * sizeof(char));
+  m_classPathOption = new char[classpathOption.size() + 1];
+  memset(m_classPathOption, 0, sizeof(char) * (classpathOption.size() + 1));
+  memcpy(m_classPathOption, classpathOption.c_str(), classpathOption.size() * sizeof(char));
 
   std::string lAwtArgStr = "-Djava.awt.headless=true";
-  awtOption = new char[lAwtArgStr.size() + 1];
-  memset(awtOption, 0, sizeof(char) * (lAwtArgStr.size() + 1));
-  memcpy(awtOption, lAwtArgStr.c_str(), sizeof(char) * lAwtArgStr.size());
-  awtOption[lAwtArgStr.size()] = 0;
+  m_awtOption = new char[lAwtArgStr.size() + 1];
+  memset(m_awtOption, 0, sizeof(char) * (lAwtArgStr.size() + 1));
+  memcpy(m_awtOption, lAwtArgStr.c_str(), sizeof(char) * lAwtArgStr.size());
+  m_awtOption[lAwtArgStr.size()] = 0;
 
   // javaLibPath are only base pathes, the full path will be computed at runtime in the Java class
   std::string jlpStr = "-Djava.library.path=" + std::string(javaLibPath);
-  jlpOption = new char[jlpStr.size() + 1];
-  memset(jlpOption, 0, sizeof(char) * (jlpStr.size() + 1));
-  memcpy(jlpOption, jlpStr.c_str(), sizeof(char) * jlpStr.size());
-  jlpOption[jlpStr.size()] = 0;
+  m_jlpOption = new char[jlpStr.size() + 1];
+  memset(m_jlpOption, 0, sizeof(char) * (jlpStr.size() + 1));
+  memcpy(m_jlpOption, jlpStr.c_str(), sizeof(char) * jlpStr.size());
+  m_jlpOption[jlpStr.size()] = 0;
 
-  options[0].optionString = classPathOption;
-  options[0].extraInfo = NULL;
-  options[1].optionString = awtOption;
-  options[1].extraInfo = NULL;
-  options[2].optionString = jlpOption;
-  options[2].extraInfo = NULL;
+  m_options[0].optionString = m_classPathOption;
+  m_options[0].extraInfo = NULL;
+  m_options[1].optionString = m_awtOption;
+  m_options[1].extraInfo = NULL;
+  m_options[2].optionString = m_jlpOption;
+  m_options[2].extraInfo = NULL;
 
-  memset(&args, 0, sizeof(args));
-  args.version  = JNI_VERSION_1_2;
-  args.nOptions = nOptions;
-  args.options  = options;
-  args.ignoreUnrecognized = JNI_FALSE;
+  memset(&m_args, 0, sizeof(m_args));
+  m_args.version  = JNI_VERSION_1_2;
+  m_args.nOptions = nOptions;
+  m_args.options  = m_options;
+  m_args.ignoreUnrecognized = JNI_FALSE;
 
-  r = JNI_CreateJavaVM(&m_vm, (void **)&m_env, &args);
-  if (r != JNI_OK) {
+  if (JNI_CreateJavaVM(&m_vm, (void **)&m_env, &m_args) != JNI_OK)
+  {
     throw VMOpenException();
   }
 }
 
-JavaVMSingleton::~JavaVMSingleton()
+void JavaVMSingleton::init(JavaVM *jvm, JNIEnv *env)
 {
-  if (instance) {
-    delete instance;
-    instance = NULL;
-  }
-  m_vm->DestroyJavaVM();
-  if (awtOption)
-    delete[] awtOption;
-  if (classPathOption)
-    delete[] classPathOption;
+  m_vm = jvm;
+  m_env = env;
+  m_classPathOption = NULL;
+  m_awtOption = NULL;
+  m_jlpOption = NULL;
 }
 
-/*JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath)
+JavaVMSingleton::~JavaVMSingleton()
 {
-  return getInstance(classPath, "");
-}*/
+  m_vm->DestroyJavaVM();
+  delete[] m_awtOption;
+  delete[] m_jlpOption;
+  delete[] m_classPathOption;
+}
 
 JavaVMSingleton* JavaVMSingleton::getInstance(const char* classPath, const char* javaLibPath)
 {
-//#ifdef WIN32
-//  // If pointer to instance of JavaVMSingleton exists (true) then return instance pointer else look for
-//  // instance pointer in memory mapped pointer. If the instance pointer does not exist in
-//  // memory mapped pointer, return a newly created pointer to an instance of Abc.
-
-//  return instance ?
-//     instance : (instance = (JavaVMSingleton*) MemoryMappedPointers::getPointer("JavaVMSingleton")) ?
-//     instance : (instance = (JavaVMSingleton*) MemoryMappedPointers::createEntry("JavaVMSingleton",(void*)new JavaVMSingleton(classPath)));
-//#else
-
-
-  // If pointer to instance of JavaVMSingleton exists (true) then return instance pointer
-  // else return a newly created pointer to an instance of JavaVMSingleton.
-  if (instance == NULL)
-  {
-    JavaVM *jvms;
-    jsize nVMs;
-    if ( JNI_GetCreatedJavaVMs(&jvms, 1, &nVMs)==0 )
-    {
-      //std::cout << "Got JVMs " << nVMs << "\n"; std::cout.flush();
-      if (nVMs == 1)
-      {
-        JavaVM *jvm = jvms;
-        JNIEnv *env;
-        if( jvm->AttachCurrentThread((void **)&env, NULL) ==0 )
-        {
-          // if there is a jvm opened already by a diffrent dynamic lib
-          // make a singleton for this lib with that jvm
-          instance = new JavaVMSingleton(jvm, env);
-        }
-      }
-    }
-
-    if (instance == NULL)
-    {
-      instance = new JavaVMSingleton(classPath, javaLibPath);
-    }
-  }
-
-  return instance;
+  static JavaVMSingleton s_instance(classPath, javaLibPath);
+  return &s_instance;
 }
 
 
 
 JavaVMSingleton* JavaVMSingleton::getInstance(const zorba::StaticContext* aStaticContext)
 {
-  if (instance == NULL)
-  {
-    String cp = computeClassPath(aStaticContext);
-    String lp = computeLibPath(aStaticContext);
-    return getInstance(cp.c_str(), lp.c_str());
-  }
-
-  return instance;
+  String cp = computeClassPath(aStaticContext);
+  String lp = computeLibPath(aStaticContext);
+  return getInstance(cp.c_str(), lp.c_str());
 }
 
 JavaVM* JavaVMSingleton::getVM()

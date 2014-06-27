@@ -38,42 +38,38 @@ class JavaException {
 
 namespace zorba
 {
-  namespace utiljvm
+namespace utiljvm
+{
+
+class UtilJvmModule;
+
+class UtilJvmModule : public ExternalModule {
+private:
+
+public:
+  UtilJvmModule() {}
+
+  virtual ~UtilJvmModule() {}
+
+  virtual String getURI() const
   {
+    return UTILJVM_MODULE_NAMESPACE;
+  }
 
-    class UtilJvmModule;
+  virtual ExternalFunction* getExternalFunction(const String& localName);
 
-    class UtilJvmModule : public ExternalModule {
-    private:
+  virtual void destroy()
+  {
+    delete this;
+  }
+};
 
-    public:
-      UtilJvmModule() {}
+ExternalFunction* UtilJvmModule::getExternalFunction(const String& localName)
+{
+  return 0;
+}
 
-      virtual ~UtilJvmModule()
-      {}
-
-      virtual String getURI() const
-      {
-	return UTILJVM_MODULE_NAMESPACE;
-      }
-
-      virtual ExternalFunction*
-      getExternalFunction(const String& localName);
-
-      virtual void destroy()
-      {
-	delete this;
-      }
-    };
-
-
-    ExternalFunction*
-    UtilJvmModule::getExternalFunction(const String& localName)
-    {
-      return 0;
-    }
-
-  }}; // namespace zorba, utiljvm
+}}; // namespace zorba, utiljvm
 
 #ifdef WIN32
 #  define DLL_EXPORT __declspec(dllexport)
