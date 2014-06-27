@@ -28,7 +28,6 @@
 #include <zorba/zorba.h>
 #include <zorba/util/fs_util.h>
 #include <zorba/internal/unique_ptr.h>
-#include <zorba/util/debug.h>
 
 namespace zorba {
 namespace jvm {
@@ -37,7 +36,6 @@ std::unique_ptr<JavaVMSingleton> JavaVMSingleton::s_instance;
 
 JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
 {
-  DEBUG_SS("Creating JavaVM");
   memset(&m_args, 0, sizeof(m_args));
   jint r;
   jint nOptions = NO_OF_JVM_OPTIONS;
@@ -94,7 +92,6 @@ JavaVMSingleton::JavaVMSingleton(JavaVM *jvm, JNIEnv *env):
 
 JavaVMSingleton::~JavaVMSingleton()
 {
-  DEBUG_SS("Destroying VM");
   m_vm->DestroyJavaVM();
   if (m_awtOption)
     delete[] m_awtOption;
