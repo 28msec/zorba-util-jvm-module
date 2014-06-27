@@ -47,6 +47,8 @@ JavaVMSingleton::JavaVMSingleton(const char* classPath, const char* javaLibPath)
         init(jvm, env);
         return;
       }
+      else
+        throw VMOpenException();
     }
   }
 
