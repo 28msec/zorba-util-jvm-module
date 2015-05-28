@@ -12,12 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+MESSAGE(STATUS "")
+MESSAGE(STATUS "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+MESSAGE(STATUS "Configuring external module <util-jvm>")
+MESSAGE(STATUS "-------------------------------------------------------------")
+MESSAGE(STATUS "")
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT (zorba_util-jvm_module)
 
 IF (ZORBA_SUPPRESS_JAVA)
   MESSAGE (STATUS "ZORBA_SUPPRESS_JAVA is true - not searching for Java")
+  
+  MESSAGE(STATUS "")
+  MESSAGE(STATUS "-------------------------------------------------------------")  
+  MESSAGE(STATUS "Configuration SUPPRESSED for external module <util-jvm>")
+  
 ELSE (ZORBA_SUPPRESS_JAVA)
   INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/config/UtilJavaUse.cmake)
 
@@ -52,15 +63,23 @@ ELSE (ZORBA_SUPPRESS_JAVA)
       ADD_SUBDIRECTORY ("config")
 
       DONE_DECLARING_ZORBA_URIS ()
+      
+      MESSAGE(STATUS "")
+      MESSAGE(STATUS "-------------------------------------------------------------")
+      MESSAGE(STATUS "Configuration SUCCEEDED for external module <util-jvm>")
 
   ELSE (JNI_FOUND)
     MESSAGE(STATUS "Building Zorba without util-jvm module.")
-  ENDIF (JNI_FOUND)
-  MESSAGE(STATUS "---")
-  MESSAGE(STATUS "")
+    
+    MESSAGE(STATUS "")
+    MESSAGE(STATUS "-------------------------------------------------------------")  
+    MESSAGE(STATUS "Configuration FAILED for external module <util-jvm>")
+    
+  ENDIF (JNI_FOUND)  
 ENDIF(ZORBA_SUPPRESS_JAVA)
 
 # Cache these variables for ease of packages depending on us
 SET (JAVA_FOUND "${JAVA_FOUND}" CACHE BOOL "Whether Java was found" FORCE)
 SET (JNI_FOUND "${JNI_FOUND}" CACHE BOOL "Whether JNI was found" FORCE)
 
+MESSAGE(STATUS "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
